@@ -1,37 +1,51 @@
-const array = [1, 2, 3, 4, 5]
-const url = `https://catfact.ninja/fact`;
-const factElements = document.querySelectorAll('.factDesription');
-
-
-const text = []
-
-const fetchCatFact = async () => {
-    const promise = await fetch(url);
-    const result = await promise.json();
-    return result?.fact;
+const factItems = document.querySelectorAll('.factItem');
+const factDesription = document.querySelectorAll('.factDesription span');
+const url = 'https://catfact.ninja/fact'
+const fetchCatFact = async (index) => {
+    try {
+        const promise = await fetch(url);
+        const result = await promise.json();
+        factDesription[index].textContent = result?.fact;
+    }
+    catch (error) {
+        console.log(error);
+    }
 }
 
-//  first method
-const promises = array.map(item => fetchCatFact());
-const getFacts2 = async () => {
-    const res = await Promise.all(promises);
-    factElements.forEach((el, index) => {
-        el.textContent = res[index];
-    })
-}
+const factNumber = document.querySelectorAll(".factNumber");
 
+factNumber.forEach((item, index) => {
+    const toggleBtn = item.querySelector('.toggle-btn');
 
-// second method
+    item.addEventListener("click", async () => {
+        const content = item.nextElementSibling;
 
-// const getFacts = async () => {
-//     for (let i = 0; i < 5; i++) {
-//         text[i] = await fetchCatFact();
-//     }
-// }
+        if (content.style.display === "none" || !content.style.display) {
+            await fetchCatFact(index);
+            content.style.display = "flex";
+            toggleBtn.textContent = '-';
 
-// getFacts();
-getFacts2();
+        } else {
+            content.style.display = "none";
+            toggleBtn.textContent = '+';
+            factDesription[index].textContent = "";
+        }
+    });
+});
 
+const imgParent = document.getElementById('imgParent');
+const icon = document.getElementById('icon');
+const defaultImageSrc = '/images/blueicon.png';
+const alternativeImageSrc = '/images/redicon.png';
 
+const changeImage = () => {
+    icon.src = alternativeImageSrc;
+};
 
+const revertImage = () => {
+    icon.src = defaultImageSrc;
+};
+
+imgParent.addEventListener('mouseover', changeImage);
+imgParent.addEventListener('mouseout', revertImage);
 
